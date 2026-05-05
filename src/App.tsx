@@ -260,7 +260,11 @@ function App() {
             </a>
           </div>
           <div className="moodle-frame">
-            <iframe title="Aula virtual Moodle" src={moodleUrl} loading="lazy" />
+            <img
+              src={`${import.meta.env.BASE_URL}assets/moodle-preview.png`}
+              alt="Vista previa de aula virtual"
+              loading="lazy"
+            />
           </div>
         </section>
 
