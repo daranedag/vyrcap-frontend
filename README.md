@@ -1,4 +1,4 @@
-# OTEC Cursos Moodle
+# VYRCAP - Frontend
 
 Web informativa en React + Vite para cursos OTEC, preparada para contenido en InsForge, aula virtual Moodle, login y pagos iniciales con Mercado Pago.
 
