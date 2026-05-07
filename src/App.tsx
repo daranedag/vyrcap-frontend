@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowRight,
   BookOpen,
@@ -25,10 +25,14 @@ const navItems = [
   { label: 'Contacto', href: '#contacto' },
 ];
 
+const sectionIds = navItems.map((item) => item.href.replace('#', ''));
+
 function App() {
   const [content, setContent] = useState<SiteContent | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
   const [activeCourse, setActiveCourse] = useState<Course | null>(null);
+  const [activeSection, setActiveSection] = useState(sectionIds[0]);
+  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
   const [menuOpen, setMenuOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<AuthMode>('login');
@@ -36,6 +40,8 @@ function App() {
   const [authPassword, setAuthPassword] = useState('');
   const [authStatus, setAuthStatus] = useState('');
   const [contactStatus, setContactStatus] = useState('');
+  const navRef = useRef<HTMLElement | null>(null);
+  const navLinkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
 
   useEffect(() => {
     async function load() {
@@ -50,6 +56,72 @@ function App() {
 
     void load();
   }, []);
+
+  useEffect(() => {
+    if (!content) return;
+
+    const sections = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((section): section is HTMLElement => section !== null);
+
+    function syncActiveSection() {
+      // Marker below the fixed header for stable "current section" detection.
+      const marker = window.scrollY + 160;
+      let current = sectionIds[0];
+
+      sections.forEach((section) => {
+        if (marker >= section.offsetTop) {
+          current = section.id;
+        }
+      });
+
+      setActiveSection((prev) => (prev === current ? prev : current));
+    }
+
+    syncActiveSection();
+    window.addEventListener('scroll', syncActiveSection, { passive: true });
+    window.addEventListener('resize', syncActiveSection);
+    return () => {
+      window.removeEventListener('scroll', syncActiveSection);
+      window.removeEventListener('resize', syncActiveSection);
+    };
+  }, [content]);
+
+  useLayoutEffect(() => {
+    function updatePill() {
+      const activeHref = `#${activeSection}`;
+      const navElement = navRef.current;
+      const activeLink = navLinkRefs.current[activeHref];
+
+      if (!navElement || !activeLink) {
+        const firstLink = navLinkRefs.current[navItems[0].href];
+        if (!navElement || !firstLink) {
+          setPillStyle((prev) => ({ ...prev, opacity: 0 }));
+          return;
+        }
+        setPillStyle({
+          left: firstLink.offsetLeft,
+          width: firstLink.offsetWidth,
+          opacity: 1,
+        });
+        return;
+      }
+
+      setPillStyle({
+        left: activeLink.offsetLeft,
+        width: activeLink.offsetWidth,
+        opacity: 1,
+      });
+    }
+
+    updatePill();
+    const frame = window.requestAnimationFrame(updatePill);
+    window.addEventListener('resize', updatePill);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('resize', updatePill);
+    };
+  }, [activeSection, menuOpen, content]);
 
   const moodleUrl = useMemo(() => {
     if (!content) return '';
@@ -112,8 +184,12 @@ function App() {
     <>
       <header className="site-header">
         <a className="brand" href="#inicio" aria-label={content.brandName}>
-          <span>{content.logoText}</span>
-          {content.brandName}
+          <img
+            className="brand-logo"
+            src={`${import.meta.env.BASE_URL}assets/VYRCAP_logo.png`}
+            alt="Logo VYRCAP OTEC"
+          />
+          <span className="brand-name">VYRCAP - OTEC</span>
         </a>
 
         <button
@@ -125,13 +201,33 @@ function App() {
           {menuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
 
-        <nav className={menuOpen ? 'nav nav-open' : 'nav'}>
+        <nav className={menuOpen ? 'nav nav-open' : 'nav'} ref={navRef}>
+          <span
+            className="nav-pill"
+            aria-hidden="true"
+            style={{
+              transform: `translateX(${pillStyle.left}px)`,
+              width: `${pillStyle.width}px`,
+              opacity: pillStyle.opacity,
+            }}
+          />
           {navItems.map((item) => (
-            <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>
+            <a
+              key={item.href}
+              className={activeSection === item.href.replace('#', '') ? 'nav-link is-active' : 'nav-link'}
+              href={item.href}
+              onClick={() => {
+                setActiveSection(item.href.replace('#', ''));
+                setMenuOpen(false);
+              }}
+              ref={(element) => {
+                navLinkRefs.current[item.href] = element;
+              }}
+            >
               {item.label}
             </a>
           ))}
-          <button className="ghost-button" type="button" onClick={() => setAuthOpen(true)}>
+          <button className="ghost-button auth-button" type="button" onClick={() => setAuthOpen(true)}>
             <LogIn size={18} />
             Iniciar sesion
           </button>
@@ -171,6 +267,16 @@ function App() {
           <div>
             <strong>MP</strong>
             <span>Pagos iniciales</span>
+          </div>
+        </section>
+
+        <section className="brand-banner-section" aria-label="Identidad institucional">
+          <div className="brand-banner-shell">
+            <img
+              src={`${import.meta.env.BASE_URL}assets/VYRCAP_banner.png`}
+              alt="Banner institucional VYRCAP OTEC"
+              loading="lazy"
+            />
           </div>
         </section>
 
@@ -313,7 +419,7 @@ function App() {
       </main>
 
       <footer>
-        <span>{content.brandName}</span>
+        <span>VYRCAP - OTEC</span>
         <span>{isInsforgeConfigured ? 'InsForge conectado' : 'InsForge pendiente de variables'}</span>
       </footer>
 

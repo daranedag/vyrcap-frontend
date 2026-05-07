@@ -1,21 +1,21 @@
 :root {
-  color: #18201e;
-  background: #f7f8f5;
+  color: #0c2a57;
+  background: #f3f6fb;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-synthesis: none;
   line-height: 1.5;
   text-rendering: optimizeLegibility;
-  --ink: #18201e;
-  --muted: #67716d;
-  --paper: #f7f8f5;
+  --ink: #0c2a57;
+  --muted: #4a5d7c;
+  --paper: #f3f6fb;
   --panel: #ffffff;
-  --line: #dfe5df;
-  --green: #2f6f62;
-  --green-dark: #174b43;
-  --yellow: #d8ab34;
-  --red: #b8573e;
-  --shadow: 0 20px 70px rgba(22, 35, 32, 0.16);
+  --line: #d5dfed;
+  --green: #1a4f95;
+  --green-dark: #0a2f63;
+  --yellow: #c5962b;
+  --red: #a0583b;
+  --shadow: 0 20px 70px rgba(8, 29, 61, 0.16);
 }
 
 * {
@@ -27,6 +27,9 @@ html {
 }
 
 body {
+  background:
+    radial-gradient(circle at 85% -10%, rgba(197, 150, 43, 0.16) 0%, rgba(197, 150, 43, 0) 52%),
+    var(--paper);
   margin: 0;
   min-width: 320px;
 }
@@ -52,8 +55,8 @@ a {
 .site-header {
   align-items: center;
   backdrop-filter: blur(18px);
-  background: rgba(247, 248, 245, 0.86);
-  border-bottom: 1px solid rgba(223, 229, 223, 0.84);
+  background: rgba(243, 246, 251, 0.9);
+  border-bottom: 1px solid rgba(213, 223, 237, 0.84);
   display: flex;
   gap: 22px;
   height: 76px;
@@ -69,41 +72,64 @@ a {
 .brand {
   align-items: center;
   display: inline-flex;
-  font-weight: 800;
+  font-weight: 700;
   gap: 10px;
 }
 
-.brand span {
-  align-items: center;
-  background: var(--ink);
-  border-radius: 6px;
-  color: #fff;
-  display: inline-flex;
-  height: 34px;
-  justify-content: center;
-  width: 42px;
+.brand-logo {
+  border-radius: 8px;
+  display: block;
+  height: 56px;
+  object-fit: contain;
+  width: auto;
+}
+
+.brand-name {
+  color: var(--ink);
+  font-size: 1rem;
 }
 
 .nav {
   align-items: center;
   display: flex;
   gap: 6px;
+  position: relative;
 }
 
-.nav a,
+.nav-link,
 .ghost-button,
 .text-button {
   background: transparent;
   border: 0;
   color: var(--muted);
   cursor: pointer;
+  position: relative;
   padding: 10px 12px;
+  z-index: 1;
 }
 
-.nav a:hover,
+.nav-link:hover,
 .ghost-button:hover,
 .text-button:hover {
   color: var(--ink);
+}
+
+.nav-pill {
+  background: linear-gradient(130deg, #0c2a57 0%, #1a4f95 100%);
+  border-radius: 999px;
+  bottom: 2px;
+  left: 0;
+  position: absolute;
+  top: 2px;
+  transition:
+    transform 240ms ease,
+    width 240ms ease,
+    opacity 180ms ease;
+  z-index: 0;
+}
+
+.nav-link.is-active {
+  color: #fff;
 }
 
 .ghost-button,
@@ -120,6 +146,21 @@ a {
   border-radius: 6px;
   color: var(--ink);
   margin-left: 6px;
+}
+
+.auth-button {
+  background: linear-gradient(132deg, #c5962b 0%, #d4a945 50%, #8f6a1d 100%);
+  border-color: transparent;
+  border-radius: 999px;
+  box-shadow: 0 12px 30px rgba(120, 88, 25, 0.25);
+  color: #102f60;
+  font-weight: 700;
+  padding: 10px 16px;
+}
+
+.auth-button:hover {
+  color: #0b2750;
+  filter: brightness(1.03);
 }
 
 .icon-button {
@@ -162,8 +203,8 @@ a {
 
 .hero-overlay {
   background:
-    linear-gradient(90deg, rgba(8, 20, 17, 0.86) 0%, rgba(8, 20, 17, 0.58) 42%, rgba(8, 20, 17, 0.15) 100%),
-    linear-gradient(180deg, rgba(8, 20, 17, 0.2), rgba(8, 20, 17, 0.72));
+    linear-gradient(90deg, rgba(6, 31, 67, 0.88) 0%, rgba(6, 31, 67, 0.62) 44%, rgba(6, 31, 67, 0.22) 100%),
+    linear-gradient(180deg, rgba(6, 31, 67, 0.2), rgba(6, 31, 67, 0.72));
 }
 
 .hero-content {
@@ -186,7 +227,7 @@ a {
 }
 
 .hero h1 {
-  font-size: clamp(3rem, 8vw, 6.8rem);
+  font-size: clamp(2.6rem, 6.4vw, 5.4rem);
   letter-spacing: 0;
   line-height: 0.95;
   margin: 0 0 24px;
@@ -210,16 +251,26 @@ a {
 .primary-button,
 .secondary-button {
   border-radius: 6px;
-  font-weight: 800;
+  font-weight: 650;
   justify-content: center;
   min-height: 48px;
   padding: 0 18px;
 }
 
 .primary-button {
-  background: var(--yellow);
-  border: 1px solid var(--yellow);
-  color: #171813;
+  background: linear-gradient(132deg, #c5962b 0%, #d4a945 50%, #8f6a1d 100%);
+  border: 1px solid transparent;
+  color: #12345f;
+  box-shadow: 0 10px 24px rgba(120, 88, 25, 0.2);
+}
+
+.primary-button:hover {
+  color: #0f2e56;
+  filter: brightness(1.03);
+}
+
+.hero-actions .primary-button {
+  font-weight: 600;
 }
 
 .secondary-button {
@@ -253,6 +304,27 @@ a {
 
 .metrics span {
   color: rgba(255, 255, 255, 0.68);
+}
+
+.brand-banner-section {
+  padding: 34px clamp(20px, 6vw, 90px) 0;
+}
+
+.brand-banner-shell {
+  background:
+    linear-gradient(128deg, rgba(255, 255, 255, 0.98) 20%, rgba(237, 242, 250, 0.98) 100%);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  padding: clamp(14px, 2.2vw, 24px);
+}
+
+.brand-banner-shell img {
+  display: block;
+  margin: 0 auto;
+  max-width: min(100%, 980px);
+  width: 100%;
 }
 
 .section {
@@ -315,6 +387,7 @@ a {
 .split-section p,
 .about-section > p {
   color: var(--muted);
+  font-size: clamp(1.03rem, 1.45vw, 1.14rem);
 }
 
 .course-actions {
@@ -324,7 +397,7 @@ a {
 }
 
 .course-actions button {
-  background: #f1f4ef;
+  background: #f2f6fc;
   border: 1px solid var(--line);
   border-radius: 6px;
   color: var(--ink);
@@ -342,7 +415,7 @@ a {
 }
 
 .course-detail {
-  background: #eef3ed;
+  background: #edf3fa;
   border-top: 4px solid var(--green);
   display: grid;
   gap: 44px;
@@ -484,7 +557,7 @@ footer {
 
 .modal-backdrop {
   align-items: center;
-  background: rgba(8, 20, 17, 0.58);
+  background: rgba(7, 31, 66, 0.58);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -536,6 +609,16 @@ footer {
     display: flex;
   }
 
+  .nav-pill {
+    display: none;
+  }
+
+  .nav-link.is-active {
+    background: rgba(26, 79, 149, 0.14);
+    border-radius: 999px;
+    color: var(--ink);
+  }
+
   .ghost-button {
     justify-content: center;
     margin-left: 0;
@@ -559,7 +642,15 @@ footer {
 
 @media (max-width: 620px) {
   .brand {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
+  }
+
+  .brand-logo {
+    height: 44px;
+  }
+
+  .brand-name {
+    display: none;
   }
 
   .hero {
